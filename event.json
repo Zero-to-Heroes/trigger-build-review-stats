@@ -1,0 +1,39 @@
+{
+	"Records": [
+		{
+			"EventSource": "aws:sns",
+			"EventVersion": "1.0",
+			"EventSubscriptionArn": "arn:aws:sns:us-west-2:478062583808:review-published:f1491217-77c9-4953-95fe-917a66d77e9b",
+			"Sns": {
+				"Type": "Notification",
+				"MessageId": "73b7584b-94d4-5160-9e33-0e53d521470d",
+				"TopicArn": "arn:aws:sns:us-west-2:478062583808:review-published",
+				"Subject": "New published review",
+				"Message": "{\"playerName\":\"Razzmouse#2648\",\"playerRank\":\"7\",\"uploaderToken\":\"overwolf-OW_b10325c6-2779-443a-837f-0c9f73e2c629\",\"opponentCardId\":\"ULDA_BOSS_99h\",\"creationDate\":\"2019-11-04 12:01:25.788\",\"coinPlay\":\"play\",\"buildNumber\":\"35057\",\"result\":\"won\",\"playerClass\":\"mage\",\"playerCardId\":\"ULDA_Reno\",\"opponentClass\":\"paladin\",\"gameMode\":\"practice\",\"replayKey\":\"hearthstone/replay/2020/2/11/43345084-7bb1-48e3-b014-ac2c86cde0af\",\"reviewId\":\"5dc5e16b26860000011abc40\",\"opponentName\":\"Bazaar Bob\",\"gameFormat\":\"wild\",\"scenarioId\":\"1111\",\"opponentRank\":\"26\"}",
+				"Timestamp": "2019-10-09T20:14:45.340Z",
+				"SignatureVersion": "1",
+				"Signature": "JXhaXcEXwtXCfUWUHvJNaG9CKGGuYQn9b/Bfpjg3YGrx2iaoG+LVTk2evxtD6Y0KplWnnqQYaenfXM2FnCwhddwPpPJKZeb5JDQuM52a2+JHfBoqBLTNEKrUTb/mMzZtjzgeUyust9WO12ihy89AHNXwGTzFD/jR5W94UJ/RIJEQ5jCGNNEA+/v3FA+BCDTmGcIhAAcHzL6lPGIyo6MjMUtmgvhjLlUqIvkzmr7oTxyIk5Cl6LwI3OY3NorcloYMU7ODCA7sZTLjk+N1T89LnZpJ6jEkYc0duKQXyoFq3xa91HVQrLbp+AcskIRlbnGUoOxAjNr+tquYu5f2T/UkRw==",
+				"SigningCertUrl": "https://sns.us-west-2.amazonaws.com/SimpleNotificationService-6aad65c2f9911b05cd53efda11f913f9.pem",
+				"UnsubscribeUrl": "https://sns.us-west-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-west-2:478062583808:review-published:f1491217-77c9-4953-95fe-917a66d77e9b",
+				"MessageAttributes": {
+					"NOTIFICATION_SUBJECT_HEADER": {
+						"Type": "String",
+						"Value": "New published review"
+					},
+					"id": {
+						"Type": "String",
+						"Value": "32e1509c-5c47-1b5d-f96d-0b6abe588cba"
+					},
+					"contentType": {
+						"Type": "String",
+						"Value": "text/plain;charset=UTF-8"
+					},
+					"timestamp": {
+						"Type": "String",
+						"Value": "1570652085321"
+					}
+				}
+			}
+		}
+	]
+}

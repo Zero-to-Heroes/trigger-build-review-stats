@@ -1,0 +1,28 @@
+# https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md
+# Indentation needs to be set with spaces, because YAML...
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Build specific stats linked to reviews
+
+Resources:
+    BuildMatchStatsFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: build-match-stats.default
+            Runtime: nodejs10.x
+            Timeout: 120
+            CodeUri: ./dist/build-match-stats
+            MemorySize: 256
+            Policies:
+                - AWSLambdaVPCAccessExecutionRole
+                - AmazonSESFullAccess
+                - AmazonSNSReadOnlyAccess
+                - SecretsManagerReadWrite
+                - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
+            Tags:
+                LambdaName: trigger-build-match-stats
+            Events:
+                ReviewPublishedSnsTopic:
+                    Type: SNS
+                    Properties:
+                        Topic: arn:aws:sns:us-west-2:478062583808:review-published
