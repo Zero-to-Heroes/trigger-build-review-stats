@@ -1,5 +1,4 @@
-import { Replay } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { CardType, GameTag, Zone } from '@firestone-hs/reference-data';
+import { extractBgPlayerPick, Replay } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
 import { ReviewMessage } from '../review-message';
 import { Stat } from '../stat';
 
@@ -12,22 +11,7 @@ export const bgsHeroPickExtractor = async (
 		return null;
 	}
 
-	const pickOptions = replay.replay
-		.findall(`.//FullEntity`)
-		.filter(entity => entity.find(`.Tag[@tag='${GameTag.CARDTYPE}'][@value='${CardType.HERO}']`))
-		.filter(entity => entity.find(`.Tag[@tag='${GameTag.CONTROLLER}'][@value='${replay.mainPlayerId}']`))
-		.filter(entity => entity.find(`.Tag[@tag='${GameTag.ZONE}'][@value='${Zone.HAND}']`))
-		.filter(entity => entity.find(`.Tag[@tag='${GameTag.BACON_HERO_CAN_BE_DRAFTED}'][@value='1']`));
-	const pickOptionIds = pickOptions.map(option => option.get('id'));
-	const pickedHero = replay.replay
-		.findall(`.//ChosenEntities`)
-		.filter(chosenEntities => {
-			const choice = chosenEntities.find('.//Choice');
-			return pickOptionIds.indexOf(choice.get('entity')) !== -1;
-		})
-		.map(entity => entity.find(`.//Choice`));
-	const pickedHeroEntityId = pickedHero[0].get('entity');
-	const pickedHeroFullEntity = pickOptions.find(option => option.get('id') === pickedHeroEntityId);
+	const [pickOptions, pickedHeroFullEntity] = extractBgPlayerPick(replay);
 	return [
 		...pickOptions
 			.map(option => option.get('cardID'))
