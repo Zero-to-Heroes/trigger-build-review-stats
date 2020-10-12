@@ -5,6 +5,7 @@ import { S3 } from './db/s3';
 // import { fetch } from 'node-fetch';
 // import { Rds } from './db/rds';
 import { ReviewMessage } from './review-message';
+import { gameDurationExtractor } from './service/game-duration-extractor';
 import { bgsHeroPickExtractor } from './service/hero-pick-extractor';
 import { Stat } from './stat';
 
@@ -58,7 +59,7 @@ export class StatsBuilder {
 }
 
 const extractStats = async (message: ReviewMessage, replay: Replay, replayString: string): Promise<readonly Stat[]> => {
-	const extractors = [bgsHeroPickExtractor];
+	const extractors = [bgsHeroPickExtractor, gameDurationExtractor];
 	const stats = (await Promise.all(extractors.map(extractor => extractor(message, replay, replayString))))
 		.reduce((a, b) => a.concat(b), [])
 		.filter(stat => stat);
