@@ -8,4 +8,5 @@ export interface ReviewMessage {
 	readonly playerRank: string;
 	readonly availableTribes: readonly Race[];
 	readonly bannedTribes: readonly Race[];
+	readonly currentDuelsRunId: string;
 }
