@@ -9,4 +9,5 @@ export interface ReviewMessage {
 	readonly availableTribes: readonly Race[];
 	readonly bannedTribes: readonly Race[];
 	readonly currentDuelsRunId: string;
+	readonly appVersion: string;
 }
