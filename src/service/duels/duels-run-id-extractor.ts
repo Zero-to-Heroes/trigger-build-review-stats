@@ -11,7 +11,7 @@ export const duelsRunIdExtractor = async (
 	if (!message.currentDuelsRunId) {
 		return [];
 	}
-	if (isBefore(message.appVersion, '6.0.22')) {
+	if (isBefore(message.appVersion, '6.0.24')) {
 		return;
 	}
 	return [
