@@ -45,6 +45,7 @@ export class StatsBuilder {
 			console.log('executing query', query);
 			await mysql.query(query);
 		}
+		await mysql.end();
 		return;
 	}
 
