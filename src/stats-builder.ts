@@ -9,6 +9,7 @@ import { bgTribesExtractor } from './service/bg-tribes-extractor';
 import { duelsRunIdExtractor } from './service/duels/duels-run-id-extractor';
 import { gameDurationExtractor } from './service/game-duration-extractor';
 import { bgsHeroPickExtractor } from './service/hero-pick-extractor';
+import { normalizedXpGainedExtractor } from './service/xp-gained-extractor';
 import { Stat } from './stat';
 
 const s3 = new S3();
@@ -62,7 +63,13 @@ export class StatsBuilder {
 }
 
 const extractStats = async (message: ReviewMessage, replay: Replay, replayString: string): Promise<readonly Stat[]> => {
-	const extractors = [bgsHeroPickExtractor, gameDurationExtractor, bgTribesExtractor, duelsRunIdExtractor];
+	const extractors = [
+		bgsHeroPickExtractor,
+		gameDurationExtractor,
+		bgTribesExtractor,
+		duelsRunIdExtractor,
+		normalizedXpGainedExtractor,
+	];
 	const stats = (await Promise.all(extractors.map(extractor => extractor(message, replay, replayString))))
 		.reduce((a, b) => a.concat(b), [])
 		.filter(stat => stat);
