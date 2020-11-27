@@ -30,21 +30,75 @@ export class StatsBuilder {
 		const reviewId = message.reviewId;
 		const replay: Replay = parseHsReplayString(replayString);
 		const statsFromGame: readonly Stat[] = await extractStats(message, replay, replayString);
+		const duelsRunId = statsFromGame.find(stat => stat.statName === 'duels-run-id')?.statValue;
+		const bgsBannedTribes = statsFromGame
+			.filter(stat => stat.statName === 'bgs-banned-tribes')
+			.map(stat => stat.statValue)
+			.join(',');
+		const bgsAvailableTribes = statsFromGame
+			.filter(stat => stat.statName === 'bgs-available-tribes')
+			.map(stat => stat.statValue)
+			.join(',');
+		const totalDurationSeconds = intValue(
+			statsFromGame.find(stat => stat.statName === 'total-duration-seconds')?.statValue,
+		);
+		const totalDurationTurns = intValue(
+			statsFromGame.find(stat => stat.statName === 'total-duration-turns')?.statValue,
+		);
+		const bgsHeroPickOptions = statsFromGame
+			.filter(stat => stat.statName === 'bgs-hero-pick-option')
+			.map(stat => stat.statValue)
+			.join(',');
+		const bgsHeroPickChoice = statsFromGame.find(stat => stat.statName === 'bgs-hero-pick-choice')?.statValue;
+		const xpGained = intValue(statsFromGame.find(stat => stat.statName === 'normalized-xp-gained')?.statValue);
+
 		console.log('stats', reviewId, statsFromGame);
 
 		const mysql = await getConnection();
-		const stats = statsFromGame
-			.filter(stat => stat)
-			.map(stat => `('${reviewId}', '${stat.statName}', '${stat.statValue}')`)
-			.join(',\n');
-		if (stats.length > 0) {
+		const validStats = statsFromGame.filter(stat => stat);
+		if (validStats.length > 0) {
+			const legacyStats = statsFromGame
+				.map(stat => `('${reviewId}', '${stat.statName}', '${stat.statValue}')`)
+				.join(',\n');
 			const query = `
 				INSERT INTO match_stats
-				(reviewId, statName, statValue)
-				VALUES ${stats}
+				(
+					reviewId, 
+					statName, 
+					statValue
+				)
+				VALUES ${legacyStats}
 			`;
 			console.log('executing query', query);
 			await mysql.query(query);
+
+			const additionalQuery = `
+				INSERT INTO replay_summary_secondary_data
+				(
+					reviewId,
+					bgsAvailableTribes,
+					bgsBannedTribes,
+					bgsHeroPickChoice,
+					bgsHeroPïckOption,
+					duelsRunId,
+					normalizedXpGain,
+					totalDurationSeconds,
+					totalDurationTurns
+				)
+				VALUES (
+					'${reviewId}', 
+					${valueHandlingNullString(bgsAvailableTribes)},
+					${valueHandlingNullString(bgsBannedTribes)},
+					${valueHandlingNullString(bgsHeroPickChoice)},
+					${valueHandlingNullString(bgsHeroPickOptions)},
+					${valueHandlingNullString(duelsRunId)},
+					${valueHandlingNullNumber(xpGained)},
+					${valueHandlingNullNumber(totalDurationSeconds)},
+					${valueHandlingNullNumber(totalDurationTurns)}
+				)
+			`;
+			console.log('executing query', additionalQuery);
+			await mysql.query(additionalQuery);
 		}
 		await mysql.end();
 		return;
@@ -61,6 +115,24 @@ export class StatsBuilder {
 		return data;
 	}
 }
+
+const valueHandlingNullString = (value: string): string => {
+	if (!value) {
+		return 'NULL';
+	}
+	return `'${value}'`;
+};
+
+const valueHandlingNullNumber = (value: number): string => {
+	if (!value) {
+		return 'NULL';
+	}
+	return `${value}`;
+};
+
+const intValue = (value: string): number => {
+	return value ? parseInt(value) : null;
+};
 
 const extractStats = async (message: ReviewMessage, replay: Replay, replayString: string): Promise<readonly Stat[]> => {
 	const extractors = [
