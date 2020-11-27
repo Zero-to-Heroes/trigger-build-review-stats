@@ -57,20 +57,20 @@ export class StatsBuilder {
 		const mysql = await getConnection();
 		const validStats = statsFromGame.filter(stat => stat);
 		if (validStats.length > 0) {
-			const legacyStats = statsFromGame
-				.map(stat => `('${reviewId}', '${stat.statName}', '${stat.statValue}')`)
-				.join(',\n');
-			const query = `
-				INSERT INTO match_stats
-				(
-					reviewId, 
-					statName, 
-					statValue
-				)
-				VALUES ${legacyStats}
-			`;
-			console.log('executing query', query);
-			await mysql.query(query);
+			// const legacyStats = statsFromGame
+			// 	.map(stat => `('${reviewId}', '${stat.statName}', '${stat.statValue}')`)
+			// 	.join(',\n');
+			// const query = `
+			// 	INSERT INTO match_stats
+			// 	(
+			// 		reviewId,
+			// 		statName,
+			// 		statValue
+			// 	)
+			// 	VALUES ${legacyStats}
+			// `;
+			// console.log('executing query', query);
+			// await mysql.query(query);
 
 			const additionalQuery = `
 				INSERT INTO replay_summary_secondary_data
