@@ -12,6 +12,10 @@ export const bgsHeroPickExtractor = async (
 	}
 
 	const [pickOptions, pickedHeroFullEntity] = extractBgPlayerPick(replay);
+	if (!pickOptions?.length || !pickedHeroFullEntity) {
+		return null;
+	}
+
 	return [
 		...pickOptions
 			.map(option => option.get('cardID'))
