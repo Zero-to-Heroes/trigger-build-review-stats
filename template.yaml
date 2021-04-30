@@ -5,6 +5,37 @@ Transform: AWS::Serverless-2016-10-31
 Description: Build specific stats linked to reviews
 
 Resources:
+    BuildMatchStatsQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+            QueueName: build-match-stats-queue
+            VisibilityTimeout: 601
+    BuildMatchStatsSqsQueuePolicy:
+        Type: AWS::SQS::QueuePolicy
+        Properties:
+            PolicyDocument:
+                Version: '2012-10-17'
+                Id: BuildMatchStatsQueuePolicy
+                Statement:
+                    - Sid: Allow-SNS-SendMessage
+                      Effect: Allow
+                      Principal:
+                          AWS: '*'
+                      Action:
+                          - sqs:SendMessage
+                      Resource: !GetAtt BuildMatchStatsQueue.Arn
+                      Condition:
+                          ArnEquals:
+                              aws:SourceArn: arn:aws:sns:us-west-2:478062583808:review-published
+            Queues:
+                - !Ref BuildMatchStatsQueue
+    SnsSubscription:
+        Type: AWS::SNS::Subscription
+        Properties:
+            Protocol: SQS
+            Endpoint: !GetAtt BuildMatchStatsQueue.Arn
+            TopicArn: arn:aws:sns:us-west-2:478062583808:review-published
+
     ProcessSaveMatchStatsFunction:
         Type: AWS::Serverless::Function
         Properties:
@@ -26,4 +57,4 @@ Resources:
                 SQSEvent:
                     Type: SQS
                     Properties:
-                        Queue: arn:aws:sqs:us-west-2:478062583808:ranked-review-published-queue
+                        Queue: !GetAtt BuildMatchStatsQueue.Arn
