@@ -15,11 +15,11 @@ import { Stat } from './stat';
 const s3 = new S3();
 
 export class StatsBuilder {
-	public async buildStats(messages: readonly ReviewMessage[]) {
-		return await Promise.all(messages.map(msg => this.buildStat(msg)));
+	public async buildStats(messages: readonly ReviewMessage[], dryRun = false) {
+		return await Promise.all(messages.map(msg => this.buildStat(msg, dryRun)));
 	}
 
-	private async buildStat(message: ReviewMessage) {
+	private async buildStat(message: ReviewMessage, dryRun: boolean) {
 		// console.log('building stat for', message.reviewId, message.replayKey);
 		const replayString = await this.loadReplayString(message.replayKey);
 		if (!replayString || replayString.length === 0) {
@@ -57,23 +57,8 @@ export class StatsBuilder {
 		const mysql = await getConnection();
 		const validStats = statsFromGame.filter(stat => stat);
 		if (validStats.length > 0) {
-			// const legacyStats = statsFromGame
-			// 	.map(stat => `('${reviewId}', '${stat.statName}', '${stat.statValue}')`)
-			// 	.join(',\n');
-			// const query = `
-			// 	INSERT INTO match_stats
-			// 	(
-			// 		reviewId,
-			// 		statName,
-			// 		statValue
-			// 	)
-			// 	VALUES ${legacyStats}
-			// `;
-			// console.log('executing query', query);
-			// await mysql.query(query);
-
 			const additionalQuery = `
-				INSERT INTO replay_summary_secondary_data
+				INSERT IGNORE INTO replay_summary_secondary_data
 				(
 					reviewId,
 					bgsAvailableTribes,
@@ -98,7 +83,11 @@ export class StatsBuilder {
 				)
 			`;
 			console.log('executing query', additionalQuery);
-			await mysql.query(additionalQuery);
+			if (dryRun) {
+				console.log('dry run, not actually executing the query');
+			} else {
+				await mysql.query(additionalQuery);
+			}
 		}
 		await mysql.end();
 		return;
