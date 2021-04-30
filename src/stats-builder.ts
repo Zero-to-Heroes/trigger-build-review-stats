@@ -50,7 +50,6 @@ export class StatsBuilder {
 		const bgsHeroPickChoice = statsFromGame.find(stat => stat.statName === 'bgs-hero-pick-choice')?.statValue;
 		const xpGained = intValue(statsFromGame.find(stat => stat.statName === 'normalized-xp-gained')?.statValue);
 
-
 		const mysql = await getConnection();
 		const validStats = statsFromGame.filter(stat => stat);
 		if (validStats.length > 0) {
