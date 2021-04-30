@@ -20,10 +20,8 @@ export class StatsBuilder {
 	}
 
 	private async buildStat(message: ReviewMessage, dryRun: boolean) {
-		// console.log('building stat for', message.reviewId, message.replayKey);
 		const replayString = await this.loadReplayString(message.replayKey);
 		if (!replayString || replayString.length === 0) {
-			// console.log('empty replay, returning');
 			return null;
 		}
 
@@ -52,7 +50,6 @@ export class StatsBuilder {
 		const bgsHeroPickChoice = statsFromGame.find(stat => stat.statName === 'bgs-hero-pick-choice')?.statValue;
 		const xpGained = intValue(statsFromGame.find(stat => stat.statName === 'normalized-xp-gained')?.statValue);
 
-		console.log('stats', reviewId, statsFromGame);
 
 		const mysql = await getConnection();
 		const validStats = statsFromGame.filter(stat => stat);
@@ -82,9 +79,7 @@ export class StatsBuilder {
 					${valueHandlingNullNumber(totalDurationTurns)}
 				)
 			`;
-			console.log('executing query', additionalQuery);
 			if (dryRun) {
-				console.log('dry run, not actually executing the query');
 			} else {
 				await mysql.query(additionalQuery);
 			}
