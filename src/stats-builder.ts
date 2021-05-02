@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { parseHsReplayString, Replay } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import SqlString from 'sqlstring';
 import { getConnection } from './db/rds';
 import { S3 } from './db/s3';
 // import { fetch } from 'node-fetch';
@@ -21,6 +22,7 @@ export class StatsBuilder {
 
 	private async buildStat(message: ReviewMessage, dryRun: boolean) {
 		const replayString = await this.loadReplayString(message.replayKey);
+		// console.log('hophop', message.replayKey, replayString?.length, message);
 		if (!replayString || replayString.length === 0) {
 			return null;
 		}
@@ -28,6 +30,7 @@ export class StatsBuilder {
 		const reviewId = message.reviewId;
 		const replay: Replay = parseHsReplayString(replayString);
 		const statsFromGame: readonly Stat[] = await extractStats(message, replay, replayString);
+		// console.log('statsFromGame', statsFromGame);
 		const duelsRunId = statsFromGame.find(stat => stat.statName === 'duels-run-id')?.statValue;
 		const bgsBannedTribes = statsFromGame
 			.filter(stat => stat.statName === 'bgs-banned-tribes')
@@ -50,9 +53,13 @@ export class StatsBuilder {
 		const bgsHeroPickChoice = statsFromGame.find(stat => stat.statName === 'bgs-hero-pick-choice')?.statValue;
 		const xpGained = intValue(statsFromGame.find(stat => stat.statName === 'normalized-xp-gained')?.statValue);
 
-		const mysql = await getConnection();
 		const validStats = statsFromGame.filter(stat => stat);
+		// console.log('validStats', validStats);
+		const mysql = await getConnection();
 		if (validStats.length > 0) {
+			const escape = SqlString.escape;
+			// TODO: remove this, but only once the replay_summary_secondary_data table is
+			// not used anywhere else anymore
 			const additionalQuery = `
 				INSERT IGNORE INTO replay_summary_secondary_data
 				(
@@ -68,20 +75,36 @@ export class StatsBuilder {
 				)
 				VALUES (
 					'${reviewId}', 
-					${valueHandlingNullString(bgsAvailableTribes)},
-					${valueHandlingNullString(bgsBannedTribes)},
-					${valueHandlingNullString(bgsHeroPickChoice)},
-					${valueHandlingNullString(bgsHeroPickOptions)},
-					${valueHandlingNullString(duelsRunId)},
-					${valueHandlingNullNumber(xpGained)},
-					${valueHandlingNullNumber(totalDurationSeconds)},
-					${valueHandlingNullNumber(totalDurationTurns)}
+					${escape(emptyAsNull(bgsAvailableTribes))},
+					${escape(emptyAsNull(bgsBannedTribes))},
+					${escape(emptyAsNull(bgsHeroPickChoice))},
+					${escape(emptyAsNull(bgsHeroPickOptions))},
+					${escape(emptyAsNull(duelsRunId))},
+					${escape(xpGained)},
+					${escape(totalDurationSeconds)},
+					${escape(totalDurationTurns)}
 				)
 			`;
-			if (dryRun) {
-			} else {
-				await mysql.query(additionalQuery);
-			}
+			// console.log('running query', additionalQuery);
+			await mysql.query(additionalQuery);
+
+			// And now insert it in the new table
+			const additionalQuery2 = `
+				UPDATE replay_summary
+				SET
+					bgsAvailableTribes = ${escape(emptyAsNull(bgsAvailableTribes))},
+					bgsBannedTribes = ${escape(emptyAsNull(bgsBannedTribes))},
+					bgsHeroPickChoice = ${escape(emptyAsNull(bgsHeroPickChoice))},
+					bgsHeroPïckOption = ${escape(emptyAsNull(bgsHeroPickOptions))},
+					runId = ${escape(emptyAsNull(duelsRunId))},
+					normalizedXpGain = ${escape(xpGained)},
+					totalDurationSeconds = ${escape(totalDurationSeconds)},
+					totalDurationTurns = ${escape(totalDurationTurns)}
+				WHERE
+					reviewId = ${escape(emptyAsNull(reviewId))}
+			`;
+			// console.log('running second query', additionalQuery2);
+			await mysql.query(additionalQuery2);
 		}
 		await mysql.end();
 		return;
@@ -94,24 +117,9 @@ export class StatsBuilder {
 		const data = replayKey.endsWith('.zip')
 			? await s3.readZippedContent('xml.firestoneapp.com', replayKey)
 			: await s3.readContentAsString('xml.firestoneapp.com', replayKey);
-		// const data = await http(`http://xml.firestoneapp.com/${replayKey}`);
 		return data;
 	}
 }
-
-const valueHandlingNullString = (value: string): string => {
-	if (!value) {
-		return 'NULL';
-	}
-	return `'${value}'`;
-};
-
-const valueHandlingNullNumber = (value: number): string => {
-	if (!value) {
-		return 'NULL';
-	}
-	return `${value}`;
-};
 
 const intValue = (value: string): number => {
 	return value ? parseInt(value) : null;
@@ -130,3 +138,10 @@ const extractStats = async (message: ReviewMessage, replay: Replay, replayString
 		.filter(stat => stat);
 	return stats;
 };
+
+function emptyAsNull(value: string): string {
+	if (value?.length === 0) {
+		return null;
+	}
+	return value;
+}

@@ -52,9 +52,15 @@ Resources:
                 # - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
             Tags:
                 LambdaName: process-save-match-stats
-            Timeout: 20
+            Timeout: 40
             Events:
                 SQSEvent:
                     Type: SQS
                     Properties:
                         Queue: !GetAtt BuildMatchStatsQueue.Arn
+    # ProcessSaveMatchStatsFunctionLogGroup:
+    #     Type: 'AWS::Logs::LogGroup'
+    #     DependsOn: 'ProcessSaveMatchStatsFunction'
+    #     Properties:
+    #         RetentionInDays: 7
+    #         LogGroupName: !Join ['', ['/aws/lambda/', !Ref ProcessSaveMatchStatsFunction]]
