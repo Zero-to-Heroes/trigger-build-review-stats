@@ -58,35 +58,33 @@ export class StatsBuilder {
 		const mysql = await getConnection();
 		if (validStats.length > 0) {
 			const escape = SqlString.escape;
-			// TODO: remove this, but only once the replay_summary_secondary_data table is
-			// not used anywhere else anymore
-			const additionalQuery = `
-				INSERT IGNORE INTO replay_summary_secondary_data
-				(
-					reviewId,
-					bgsAvailableTribes,
-					bgsBannedTribes,
-					bgsHeroPickChoice,
-					bgsHeroPïckOption,
-					duelsRunId,
-					normalizedXpGain,
-					totalDurationSeconds,
-					totalDurationTurns
-				)
-				VALUES (
-					'${reviewId}', 
-					${escape(emptyAsNull(bgsAvailableTribes))},
-					${escape(emptyAsNull(bgsBannedTribes))},
-					${escape(emptyAsNull(bgsHeroPickChoice))},
-					${escape(emptyAsNull(bgsHeroPickOptions))},
-					${escape(emptyAsNull(duelsRunId))},
-					${escape(xpGained)},
-					${escape(totalDurationSeconds)},
-					${escape(totalDurationTurns)}
-				)
-			`;
-			// console.log('running query', additionalQuery);
-			await mysql.query(additionalQuery);
+			// const additionalQuery = `
+			// 	INSERT IGNORE INTO replay_summary_secondary_data
+			// 	(
+			// 		reviewId,
+			// 		bgsAvailableTribes,
+			// 		bgsBannedTribes,
+			// 		bgsHeroPickChoice,
+			// 		bgsHeroPïckOption,
+			// 		duelsRunId,
+			// 		normalizedXpGain,
+			// 		totalDurationSeconds,
+			// 		totalDurationTurns
+			// 	)
+			// 	VALUES (
+			// 		'${reviewId}',
+			// 		${escape(emptyAsNull(bgsAvailableTribes))},
+			// 		${escape(emptyAsNull(bgsBannedTribes))},
+			// 		${escape(emptyAsNull(bgsHeroPickChoice))},
+			// 		${escape(emptyAsNull(bgsHeroPickOptions))},
+			// 		${escape(emptyAsNull(duelsRunId))},
+			// 		${escape(xpGained)},
+			// 		${escape(totalDurationSeconds)},
+			// 		${escape(totalDurationTurns)}
+			// 	)
+			// `;
+			// // console.log('running query', additionalQuery);
+			// await mysql.query(additionalQuery);
 
 			// And now insert it in the new table
 			const additionalQuery2 = `
