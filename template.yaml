@@ -43,7 +43,7 @@ Resources:
             Runtime: nodejs10.x
             CodeUri: ./dist/process-save-match-stats
             MemorySize: 256
-            ReservedConcurrentExecutions: 3
+            ReservedConcurrentExecutions: 5
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
                 - SecretsManagerReadWrite
@@ -52,7 +52,7 @@ Resources:
                 # - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
             Tags:
                 LambdaName: process-save-match-stats
-            Timeout: 40
+            Timeout: 60
             Events:
                 SQSEvent:
                     Type: SQS
