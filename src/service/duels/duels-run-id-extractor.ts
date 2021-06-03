@@ -8,7 +8,7 @@ export const duelsRunIdExtractor = async (
 	replay: Replay,
 	replayString: string,
 ): Promise<readonly Stat[]> => {
-	if (!message.currentDuelsRunId) {
+	if (!message.currentDuelsRunId && !message.runId) {
 		return [];
 	}
 	if (isBefore(message.appVersion, '6.0.24')) {
@@ -17,7 +17,7 @@ export const duelsRunIdExtractor = async (
 	return [
 		{
 			statName: 'duels-run-id',
-			statValue: message.currentDuelsRunId,
+			statValue: message.runId ?? message.currentDuelsRunId,
 		} as Stat,
 	];
 };
