@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Replay } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
 import { Race } from '@firestone-hs/reference-data';
-import { ReviewMessage } from '../review-message';
-import { Stat } from '../stat';
+import { ReviewMessage } from '../../review-message';
+import { Stat } from '../../stat';
 
 export const bgTribesExtractor = async (
 	message: ReviewMessage,

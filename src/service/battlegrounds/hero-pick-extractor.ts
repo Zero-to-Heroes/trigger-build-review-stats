@@ -1,6 +1,6 @@
 import { extractBgPlayerPick, Replay } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { ReviewMessage } from '../review-message';
-import { Stat } from '../stat';
+import { ReviewMessage } from '../../review-message';
+import { Stat } from '../../stat';
 
 export const bgsHeroPickExtractor = async (
 	message: ReviewMessage,
