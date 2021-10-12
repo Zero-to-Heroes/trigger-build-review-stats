@@ -64,7 +64,6 @@ export class StatsBuilder {
 
 		// Mercenaries are handled into their own lambda, so they can update replay_summary
 		// and the mercenaries table at the same time
-		
 
 		const validStats = statsFromGame.filter(stat => stat);
 		// console.log('validStats', validStats);
