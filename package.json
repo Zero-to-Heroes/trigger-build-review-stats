@@ -1,6 +1,6 @@
 {
 	"name": "@firestone-hs/trigger-build-match-stats",
-	"version": "1.0.14",
+	"version": "1.0.15",
 	"description": "",
 	"scripts": {
 		"lint": "eslint --color --fix --ext .ts .",
