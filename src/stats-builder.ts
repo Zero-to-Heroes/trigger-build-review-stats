@@ -11,7 +11,6 @@ import { bgTribesExtractor } from './service/battlegrounds/bg-tribes-extractor';
 import { bgsHeroPickExtractor } from './service/battlegrounds/hero-pick-extractor';
 import { duelsRunIdExtractor } from './service/duels/duels-run-id-extractor';
 import { gameDurationExtractor } from './service/game-duration-extractor';
-import { mercsHeroesInfosExtractor } from './service/mercenaries/heroes-info-extractor';
 import { normalizedXpGainedExtractor } from './service/xp-gained-extractor';
 import { Stat } from './stat';
 
@@ -119,9 +118,8 @@ export const extractStats = async (
 		bgTribesExtractor,
 		duelsRunIdExtractor,
 		normalizedXpGainedExtractor,
-		mercsHeroesInfosExtractor,
 	];
-	const stats = (await Promise.all(extractors.map(extractor => extractor(message, replay, replayString, allCards))))
+	const stats = (await Promise.all(extractors.map(extractor => extractor(message, replay, replayString))))
 		.reduce((a, b) => a.concat(b), [])
 		.filter(stat => stat);
 	return stats;

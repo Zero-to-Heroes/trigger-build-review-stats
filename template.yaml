@@ -43,7 +43,7 @@ Resources:
             Runtime: nodejs10.x
             CodeUri: ./dist/process-save-match-stats
             MemorySize: 256
-            ReservedConcurrentExecutions: 5
+            ReservedConcurrentExecutions: 10
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
                 - SecretsManagerReadWrite
