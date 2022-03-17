@@ -40,7 +40,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             Handler: process-save-match-stats.default
-            Runtime: nodejs10.x
+            Runtime: nodejs12.x
             CodeUri: ./dist/process-save-match-stats
             MemorySize: 380
             ReservedConcurrentExecutions: 10
