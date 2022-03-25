@@ -42,7 +42,7 @@ Resources:
             Handler: process-save-match-stats.default
             Runtime: nodejs12.x
             CodeUri: ./dist/process-save-match-stats
-            MemorySize: 380
+            MemorySize: 450
             ReservedConcurrentExecutions: 10
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
