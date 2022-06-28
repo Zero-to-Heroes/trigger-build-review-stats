@@ -53,11 +53,11 @@ Resources:
             Tags:
                 LambdaName: process-save-match-stats
             Timeout: 60
-            Events:
-                SQSEvent:
-                    Type: SQS
-                    Properties:
-                        Queue: !GetAtt BuildMatchStatsQueue.Arn
+            # Events:
+            #     SQSEvent:
+            #         Type: SQS
+            #         Properties:
+            #             Queue: !GetAtt BuildMatchStatsQueue.Arn
     # ProcessSaveMatchStatsFunctionLogGroup:
     #     Type: 'AWS::Logs::LogGroup'
     #     DependsOn: 'ProcessSaveMatchStatsFunction'

@@ -12,4 +12,7 @@ export interface ReviewMessage {
 	readonly runId: string;
 	readonly appVersion: string;
 	readonly normalizedXpGained: number;
+	readonly userName: string;
+	readonly userId: string;
+	readonly appChannel: string;
 }

@@ -24,6 +24,12 @@ export class StatsBuilder {
 	}
 
 	private async buildStat(message: ReviewMessage, dryRun: boolean) {
+		const useNewProcess = true;
+		if (useNewProcess) {
+			console.log('new process, returning');
+			return;
+		}
+
 		const replayString = await this.loadReplayString(message.replayKey);
 		// console.log('hophop', message.replayKey, replayString?.length, message);
 		if (!replayString || replayString.length === 0) {
